@@ -87,10 +87,8 @@ function requestYamlSchemaContentCallback(uri: string): string | undefined {
     const manifestType = parsedUri.path.slice(1);
     // if it is a multiple choice, make an 'oneof' schema.
     if (manifestType.includes('+')) {
-        const manifestRefList = manifestType.split('+').choose(util.makeRefOnKubernetes);
-        // yaml language server supports schemaSequence at
-        // https://github.com/redhat-developer/yaml-language-server/pull/81
-        return JSON.stringify({ schemaSequence: manifestRefList });
+        const manifestRefList = manifestType.split('+').filter((v, i, s) => s.indexOf(v) === i).choose(util.makeRefOnKubernetes);
+        return JSON.stringify({ oneOf: manifestRefList });
     }
     const schema = schemas.active().lookup(manifestType);
 
